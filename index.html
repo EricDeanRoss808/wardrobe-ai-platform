@@ -670,10 +670,33 @@
           }).response;
           const data = await body.json();
           if (data && data.length > 0) {
-            const latestOutfit = data[data.length - 1];
-            const outfits = latestOutfit.outfits || [];
-            const hasMockups = outfits.some(o => o.mockup_image_url);
-            if (hasMockups) {
+            const withMockups = data.filter(record => {
+              const outfits = record.outfits || [];
+              return outfits.some(o => {
+                const url = o.mockup_image_url
+                  || (o.M && o.M.mockup_image_url && o.M.mockup_image_url.S);
+                return !!url;
+              });
+            });
+
+            if (withMockups.length > 0) {
+              const latest = withMockups[withMockups.length - 1];
+              const outfits = latest.outfits.map(o => {
+                if (o.M) {
+                  return {
+                    outfit_id: o.M.outfit_id?.S || o.M.outfit_id,
+                    style: o.M.style?.S || o.M.style,
+                    reasoning: o.M.reasoning?.S || o.M.reasoning,
+                    mockup_image_url: o.M.mockup_image_url?.S || o.M.mockup_image_url,
+                    items_detail: (o.M.items_detail?.L || []).map(item => ({
+                      itemId: item.M?.itemId?.S,
+                      itemTypes: (item.M?.itemTypes?.L || []).map(t => t.S || t)
+                    }))
+                  };
+                }
+                return o;
+              });
+
               displayOutfits(outfits);
               btn.textContent = '✨ Regenerate Outfits';
               btn.disabled = false;
