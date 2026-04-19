@@ -336,7 +336,134 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+  import { Amplify } from 'https://esm.sh/aws-amplify';
+  import { signIn, signUp, signOut, getCurrentUser } from 'https://esm.sh/aws-amplify/auth';
+  import { uploadData } from 'https://esm.sh/aws-amplify/storage';
+  import { post } from 'https://esm.sh/aws-amplify/api';
+
+  Amplify.configure({
+    Auth: {
+      Cognito: {
+        userPoolId: 'us-east-1_FYbh4udiC',
+        userPoolClientId: 'uj2o74h6u9q46p4gptple56vv',
+        identityPoolId: 'us-east-1:3bbbb27c-647c-4a98-b3a4-7d256901afe5',
+        loginWith: { email: true }
+      }
+    },
+    Storage: {
+      S3: {
+        bucket: 'wardrobeapp61dbb40a60c14c41bd0ae773d3cf9e940f29b-dev',
+        region: 'us-east-1'
+      }
+    },
+    API: {
+      REST: {
+        wardrobeapi: {
+          endpoint: 'https://hw02ewz79l.execute-api.us-east-1.amazonaws.com/dev',
+          region: 'us-east-1'
+        }
+      }
+    }
+  });
+
+  try {
+    const user = await getCurrentUser();
+    document.querySelector('.profile-name').textContent = user.username;
+    document.querySelector('.profile-handle').textContent = '@' + user.username;
+  } catch {
+    showLoginModal();
+  }
+
+  function showLoginModal() {
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;background:#000;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px;';
+    modal.innerHTML = `
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#fff;letter-spacing:0.06em;">Drip</div>
+      <input id="authEmail" type="email" placeholder="Email" style="width:100%;max-width:320px;padding:12px;background:#111;border:0.5px solid #333;color:#fff;font-size:14px;outline:none;">
+      <input id="authPassword" type="password" placeholder="Password" style="width:100%;max-width:320px;padding:12px;background:#111;border:0.5px solid #333;color:#fff;font-size:14px;outline:none;">
+      <button id="btnSignIn" style="width:100%;max-width:320px;padding:12px;background:#fff;border:none;color:#000;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;">Sign In</button>
+      <button id="btnSignUp" style="width:100%;max-width:320px;padding:12px;background:transparent;border:0.5px solid #333;color:#fff;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;">Create Account</button>
+      <div id="authError" style="color:#e55;font-size:12px;"></div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('btnSignIn').onclick = async () => {
+      try {
+        await signIn({
+          username: document.getElementById('authEmail').value,
+          password: document.getElementById('authPassword').value
+        });
+        modal.remove();
+        location.reload();
+      } catch (err) {
+        document.getElementById('authError').textContent = err.message;
+      }
+    };
+
+    document.getElementById('btnSignUp').onclick = async () => {
+      try {
+        await signUp({
+          username: document.getElementById('authEmail').value,
+          password: document.getElementById('authPassword').value,
+          options: { userAttributes: { email: document.getElementById('authEmail').value } }
+        });
+        document.getElementById('authError').style.color = '#5e5';
+        document.getElementById('authError').textContent = 'Check your email for a confirmation code!';
+      } catch (err) {
+        document.getElementById('authError').textContent = err.message;
+      }
+    };
+  }
+
+  document.getElementById('uploadZone').onclick = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      document.querySelector('.upload-label').textContent = 'Uploading...';
+      try {
+        const result = await uploadData({
+          key: `photos/${Date.now()}-${file.name}`,
+          data: file,
+          options: { contentType: file.type }
+        });
+        window._uploadedPhotoKey = result.key;
+        document.querySelector('.upload-label').textContent = '✓ Photo uploaded';
+      } catch (err) {
+        document.querySelector('.upload-label').textContent = 'Upload failed';
+        console.error(err);
+      }
+    };
+    input.click();
+  };
+
+  window.handleAddItem = async () => {
+    const payload = {
+      name: document.getElementById('itemName').value,
+      brand: document.getElementById('itemBrand').value,
+      category: document.getElementById('itemCategory').value,
+      fit: document.getElementById('itemFit').value,
+      color: document.querySelector('#colorPicker .color-swatch.selected')?.dataset.color,
+      tags: [...document.querySelectorAll('#tagRow .tag-toggle.selected')].map(t => t.dataset.tag),
+      seasons: [...document.querySelectorAll('#seasonRow .tag-toggle.selected')].map(t => t.dataset.season),
+      photoKey: window._uploadedPhotoKey || null
+    };
+    try {
+      await post({
+        apiName: 'wardrobeapi',
+        path: '/wardrobe',
+        options: { body: payload }
+      }).response;
+      alert('Item added!');
+      switchScreen('wardrobe');
+    } catch (err) {
+      alert('Error saving item: ' + err.message);
+    }
+  };
+
   function switchScreen(name) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -344,26 +471,12 @@
     document.getElementById('nav-' + name).classList.add('active');
     window.scrollTo(0, 0);
   }
+  window.switchScreen = switchScreen;
 
   function toggleSwitch(id) {
     document.getElementById(id).classList.toggle('on');
   }
-
-  function handleAddItem() {
-    // TODO: Collect form values and POST to your backend
-    // Example:
-    // const payload = {
-    //   name: document.getElementById('itemName').value,
-    //   brand: document.getElementById('itemBrand').value,
-    //   category: document.getElementById('itemCategory').value,
-    //   fit: document.getElementById('itemFit').value,
-    //   color: document.querySelector('#colorPicker .color-swatch.selected')?.dataset.color,
-    //   tags: [...document.querySelectorAll('#tagRow .tag-toggle.selected')].map(t => t.dataset.tag),
-    //   seasons: [...document.querySelectorAll('#seasonRow .tag-toggle.selected')].map(t => t.dataset.season),
-    // };
-    // await fetch('/api/wardrobe', { method: 'POST', body: JSON.stringify(payload) });
-    switchScreen('wardrobe');
-  }
+  window.toggleSwitch = toggleSwitch;
 
   document.querySelectorAll('#colorPicker .color-swatch').forEach(sw => {
     sw.addEventListener('click', () => {
