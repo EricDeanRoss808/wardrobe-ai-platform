@@ -89,6 +89,15 @@
           ],
           "category": "storage",
           "resourceName": "swipeHistory"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "savedOutfits"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -138,6 +147,10 @@
   },
   "storage": {
     "outfits": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "savedOutfits": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },

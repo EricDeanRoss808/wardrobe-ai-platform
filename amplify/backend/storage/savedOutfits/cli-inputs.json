@@ -1,0 +1,14 @@
+{
+  "resourceName": "savedOutfits",
+  "tableName": "saved_outfits",
+  "partitionKey": {
+    "fieldName": "userId",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "savedId",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

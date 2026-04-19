@@ -29,6 +29,10 @@
         "read",
         "update",
         "delete"
+      ],
+      "savedOutfits": [
+        "create",
+        "read"
       ]
     }
   }

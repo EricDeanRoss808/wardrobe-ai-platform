@@ -21,12 +21,13 @@
         "users": {},
         "wardrobeItems": {},
         "outfits": {},
-        "swipeHistory": {}
+        "swipeHistory": {},
+        "savedOutfits": {}
       },
       "function": {
         "wardrobeFunction": {
           "deploymentBucketName": "amplify-wardrobeapp-dev-0f29b-deployment",
-          "s3Key": "amplify-builds/wardrobeFunction-482f6152466e756f4836-build.zip"
+          "s3Key": "amplify-builds/wardrobeFunction-2f33745a524d77715751-build.zip"
         }
       },
       "api": {

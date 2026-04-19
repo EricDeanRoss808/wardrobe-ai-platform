@@ -39,6 +39,19 @@
           "delete"
         ]
       }
+    },
+    "/saved": {
+      "name": "/saved",
+      "lambdaFunction": "wardrobeFunction",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
     }
   }
 }

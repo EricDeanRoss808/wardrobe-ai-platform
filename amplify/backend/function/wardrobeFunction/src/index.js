@@ -1,4 +1,23 @@
-const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+/* Amplify Params - DO NOT EDIT
+	ENV
+	REGION
+	STORAGE_OUTFITS_ARN
+	STORAGE_OUTFITS_NAME
+	STORAGE_OUTFITS_STREAMARN
+	STORAGE_SAVEDOUTFITS_ARN
+	STORAGE_SAVEDOUTFITS_NAME
+	STORAGE_SAVEDOUTFITS_STREAMARN
+	STORAGE_SWIPEHISTORY_ARN
+	STORAGE_SWIPEHISTORY_NAME
+	STORAGE_SWIPEHISTORY_STREAMARN
+	STORAGE_USERS_ARN
+	STORAGE_USERS_NAME
+	STORAGE_USERS_STREAMARN
+	STORAGE_WARDROBEITEMS_ARN
+	STORAGE_WARDROBEITEMS_NAME
+	STORAGE_WARDROBEITEMS_STREAMARN
+	STORAGE_WARDROBESTORAGE_BUCKETNAME
+Amplify Params - DO NOT EDIT */const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand, QueryCommand } = require('@aws-sdk/lib-dynamodb');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
