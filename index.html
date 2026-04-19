@@ -17,8 +17,8 @@
     .app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
     .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 56px; border-bottom: 0.5px solid var(--border2); background: var(--bg); flex-shrink: 0; position: sticky; top: 0; z-index: 100; }
     .logo { display: flex; flex-direction: column; line-height: 1; }
-    .logo-main { font-family: var(--sans); font-size: 15px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: #fff; }
-    .logo-sub { font-family: var(--sans); font-size: 8px; font-weight: 300; letter-spacing: 0.38em; text-transform: uppercase; color: #666; margin-top: 3px; }
+    .logo-main { font-family: var(--sans); font-size: 20px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: #fff; }
+    .logo-sub { font-family: var(--sans); font-size: 9px; font-weight: 300; letter-spacing: 0.38em; text-transform: uppercase; color: #fff; margin-top: 3px; }
     .bottomnav { display: flex; background: #fff; flex-shrink: 0; position: sticky; bottom: 0; z-index: 100; }
     .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0 8px; cursor: pointer; transition: color 0.15s; color: #aaa; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; border: none; background: none; font-family: var(--sans); }
     .nav-item.active { color: #000; }
@@ -72,8 +72,8 @@
     .field-select { width: 100%; background: var(--surface2); border: 0.5px solid var(--border2); padding: 10px 12px; font-size: 13px; color: var(--text2); font-family: var(--sans); outline: none; appearance: none; cursor: pointer; }
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .color-picker-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-    .color-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 1.5px solid transparent; transition: border-color 0.15s; flex-shrink: 0; }
-    .color-swatch.selected { border-color: #fff; }
+    .color-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; flex-shrink: 0; outline: 2px solid transparent; outline-offset: 2px; }
+    .color-swatch.selected { outline-color: #fff; border-color: transparent; }
     .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
     .tag-toggle { padding: 5px 12px; border: 0.5px solid var(--border2); background: transparent; font-size: 11px; color: var(--text2); cursor: pointer; transition: all 0.15s; font-family: var(--sans); letter-spacing: 0.05em; text-transform: uppercase; }
     .tag-toggle.selected { border-color: #fff; background: #fff; color: #000; }
@@ -245,14 +245,16 @@
         <div class="field-group">
           <label class="field-label">Primary colour</label>
           <div class="color-picker-row" id="colorPicker">
-            <div class="color-swatch selected" style="background:#e8e4dc;" data-color="cream"></div>
-            <div class="color-swatch" style="background:#111;border:1px solid #333;" data-color="black"></div>
+            <div class="color-swatch selected" style="background:#ffffff;" data-color="white"></div>
+            <div class="color-swatch" style="background:#111111;" data-color="black"></div>
+            <div class="color-swatch" style="background:#888888;" data-color="grey"></div>
+            <div class="color-swatch" style="background:#e8e4dc;" data-color="cream"></div>
             <div class="color-swatch" style="background:#3a3a4a;" data-color="navy"></div>
             <div class="color-swatch" style="background:#5a4030;" data-color="brown"></div>
             <div class="color-swatch" style="background:#4a5a40;" data-color="olive"></div>
             <div class="color-swatch" style="background:#405060;" data-color="slate"></div>
-            <div class="color-swatch" style="background:#888;" data-color="grey"></div>
             <div class="color-swatch" style="background:#9a6a6a;" data-color="dusty-rose"></div>
+            <div class="color-swatch" style="background:#c8a97e;" data-color="tan"></div>
           </div>
         </div>
         <div class="field-group">
