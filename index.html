@@ -561,7 +561,28 @@
       await post({
         apiName: 'wardrobeapi',
         path: '/wardrobe',
-        options: { body: { name, brand, category, fit, color, tags, seasons, photoKey } }
+        options: { body: {
+          name,
+          brand,
+          category,
+          fit,
+          color,
+          tags,
+          seasons,
+          photoKey,
+          status: 'success',
+          cleanedLabels: {
+            itemTypes: [category],
+            colors: [color],
+            materials: [],
+            style: tags,
+            fit: [fit],
+            patterns: []
+          },
+          detectedItems: [],
+          confidence: '90.0',
+          processedAt: new Date().toISOString()
+        } }
       }).response;
     } catch (err) {
       console.error('Backend save failed:', err);
