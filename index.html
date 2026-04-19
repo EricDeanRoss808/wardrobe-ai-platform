@@ -304,7 +304,7 @@
   import { Amplify } from 'https://esm.sh/aws-amplify';
   import { signIn, signUp, signOut, getCurrentUser, fetchAuthSession } from 'https://esm.sh/aws-amplify/auth';
   import { uploadData } from 'https://esm.sh/aws-amplify/storage';
-  import { post } from 'https://esm.sh/aws-amplify/api';
+  import { post, get } from 'https://esm.sh/aws-amplify/api';
 
   async function getUserId() {
     const session = await fetchAuthSession();
@@ -636,30 +636,64 @@
   async function generateOutfits() {
     const btn = document.getElementById('generateBtn');
     const results = document.getElementById('outfitResults');
-    btn.textContent = '⏳ Generating outfits...';
+    btn.textContent = '⏳ Starting...';
     btn.disabled = true;
     results.innerHTML = `
       <div style="text-align:center;padding:40px;color:#666;">
         <div style="font-size:24px;margin-bottom:12px;">🤖</div>
-        <div style="font-size:13px;letter-spacing:0.06em;">AI is styling your wardrobe...</div>
+        <div style="font-size:13px;letter-spacing:0.06em;" id="statusText">AI is styling your wardrobe...</div>
         <div style="font-size:11px;color:#444;margin-top:8px;">This takes about 60 seconds</div>
       </div>`;
     try {
       const userId = await getUserId();
-      const { body } = await post({
+
+      // Trigger generation (returns instantly)
+      await post({
         apiName: 'wardrobeapi',
         path: '/outfits',
         options: { body: { userId } }
       }).response;
-      const data = await body.json();
-      console.log('Outfit response:', data);
-      if (data.mockups && data.mockups.mockups) {
-        displayOutfits(data.mockups.mockups, data.outfits.outfits);
-      } else {
-        results.innerHTML = `<div style="padding:20px;color:#e55;">Could not generate outfits. Make sure you have uploaded photos first.</div>`;
-      }
-      btn.textContent = '✨ Regenerate Outfits';
-      btn.disabled = false;
+
+      // Poll every 5 seconds for results
+      let attempts = 0;
+      const maxAttempts = 24;
+
+      const poll = async () => {
+        attempts++;
+        const statusEl = document.getElementById('statusText');
+        if (statusEl) statusEl.textContent = `AI is working... (${attempts * 5}s)`;
+        try {
+          const { body } = await get({
+            apiName: 'wardrobeapi',
+            path: '/outfits'
+          }).response;
+          const data = await body.json();
+          if (data && data.length > 0) {
+            const latestOutfit = data[data.length - 1];
+            const outfits = latestOutfit.outfits || [];
+            const hasMockups = outfits.some(o => o.mockup_image_url);
+            if (hasMockups) {
+              displayOutfits(outfits);
+              btn.textContent = '✨ Regenerate Outfits';
+              btn.disabled = false;
+              return;
+            }
+          }
+          if (attempts < maxAttempts) {
+            setTimeout(poll, 5000);
+          } else {
+            results.innerHTML = `<div style="padding:20px;color:#e55;">Generation timed out. Please try again.</div>`;
+            btn.textContent = '✨ Generate My Outfits';
+            btn.disabled = false;
+          }
+        } catch (err) {
+          if (attempts < maxAttempts) setTimeout(poll, 5000);
+        }
+      };
+
+      // Start polling after 15 seconds
+      setTimeout(poll, 15000);
+
     } catch (err) {
       console.error('Generation error:', err);
       results.innerHTML = `<div style="padding:20px;color:#e55;">Error: ${err.message}</div>`;
@@ -669,34 +703,33 @@
   }
   window.generateOutfits = generateOutfits;
 
-  function displayOutfits(mockups, outfits) {
+  function displayOutfits(outfits) {
     const results = document.getElementById('outfitResults');
-    if (!mockups || mockups.length === 0) {
+    if (!outfits || outfits.length === 0) {
       results.innerHTML = `<div style="padding:20px;color:#666;">No outfits generated yet.</div>`;
       return;
     }
-    const outfitMap = {};
-    if (outfits) { outfits.forEach(o => { outfitMap[o.outfit_id] = o; }); }
-    results.innerHTML = mockups.map(mockup => {
-      const outfit = outfitMap[mockup.outfit_id] || {};
-      const style = mockup.style || 'casual';
+    results.innerHTML = outfits.map(outfit => {
+      const style = outfit.style || 'casual';
       const reasoning = outfit.reasoning || '';
-      const imageUrl = mockup.mockup_image_url;
+      const imageUrl = outfit.mockup_image_url;
       const items = outfit.items_detail || [];
-      const itemPills = items
-        .filter((item, index, self) => index === self.findIndex(i => i.itemId === item.itemId))
-        .map(item => item.itemTypes.map(t => `<div class="piece-pill">${t}</div>`).join(''))
-        .join('');
+      const uniqueItems = items.filter((item, index, self) =>
+        index === self.findIndex(i => i.itemId === item.itemId)
+      );
+      const itemPills = uniqueItems.map(item =>
+        item.itemTypes.map(t => `<div class="piece-pill">${t}</div>`).join('')
+      ).join('');
       return `
         <div class="outfit-card">
           <div style="width:100%;aspect-ratio:1;overflow:hidden;background:#111;">
             ${imageUrl
-              ? `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div style=\'padding:20px;color:#444;text-align:center;\'>Image loading...</div>'">`
-              : `<div style="padding:40px;text-align:center;color:#444;">Generating image...</div>`}
+              ? `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div style=padding:20px;color:#444;text-align:center>Image unavailable</div>'">`
+              : `<div style="padding:40px;text-align:center;color:#444;">No image generated</div>`}
           </div>
           <div class="outfit-details">
             <div class="outfit-name" style="text-transform:capitalize;">${style} Look</div>
-            <div class="outfit-meta">${items.length} pieces</div>
+            <div class="outfit-meta">${uniqueItems.length} pieces</div>
             ${reasoning ? `<div style="font-size:11px;color:#666;margin-top:6px;line-height:1.5;">${reasoning}</div>` : ''}
             <div class="outfit-pieces-row">${itemPills}</div>
             <div class="outfit-actions">
