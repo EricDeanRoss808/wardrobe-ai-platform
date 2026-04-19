@@ -502,66 +502,16 @@
   };
 
   window.handleAddItem = async () => {
-    const name = document.getElementById('itemName').value;
-    const brand = document.getElementById('itemBrand').value;
-    const category = document.getElementById('itemCategory').value;
-    const fit = document.getElementById('itemFit').value;
-    const color = document.querySelector('#colorPicker .color-swatch.selected')?.dataset.color;
-    const tags = [...document.querySelectorAll('#tagRow .tag-toggle.selected')].map(t => t.dataset.tag);
-    const seasons = [...document.querySelectorAll('#seasonRow .tag-toggle.selected')].map(t => t.dataset.season);
-    const photoKey = window._uploadedPhotoKey || null;
-    const photoDataUrl = window._uploadedPhotoDataUrl || null;
-
-    if (!name) { alert('Please enter an item name.'); return; }
-
-    // Add card to wardrobe grid immediately with photo
-    const grid = document.querySelector('.clothes-grid');
-    const thumb = photoDataUrl
-      ? `<img src="${photoDataUrl}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" />`
-      : `<div style="font-size:32px;">👕</div>`;
-    const card = document.createElement('div');
-    card.className = 'cloth-card';
-    card.innerHTML = `
-      <div class="cloth-thumb" style="position:relative;">
-        ${thumb}
-        <div class="cloth-tag">${{tops:'Tops',bottoms:'Bottoms',outerwear:'Outerwear',shoes:'Shoes',accessories:'Accessories'}[category] || category || 'Item'}</div>
-      </div>
-      <div class="cloth-info">
-        <div class="cloth-name">${name}</div>
-        <div class="cloth-brand">${brand || ''}</div>
-      </div>`;
-    grid.appendChild(card);
-
-    // Update piece count
-    const subtitle = document.querySelector('#screen-wardrobe .screen-subtitle');
-    if (subtitle) {
-      const current = parseInt(subtitle.textContent) || 0;
-      subtitle.textContent = (current + 1) + ' pieces';
-    }
-
-    // Reset form
-    document.getElementById('itemName').value = '';
-    document.getElementById('itemBrand').value = '';
-    document.getElementById('itemCategory').value = '';
-    document.getElementById('itemFit').value = '';
-    const zone = document.getElementById('uploadZone');
-    zone.style.padding = '';
-    zone.style.border = '';
-    zone.innerHTML = `
-      <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      <div class="upload-label">Upload photo</div>
-      <div class="upload-sub">tap or drag & drop</div>`;
-    window._uploadedPhotoKey = null;
-    window._uploadedPhotoDataUrl = null;
-
-    switchScreen('wardrobe');
-
-    // Post to backend in background
     const selectedColor = document.querySelector('#colorPicker .color-swatch.selected')?.dataset.color || 'unknown';
     const selectedCategory = document.getElementById('itemCategory').value || 'tops';
     const selectedFit = document.getElementById('itemFit').value || 'regular';
     const selectedTags = [...document.querySelectorAll('#tagRow .tag-toggle.selected')].map(t => t.dataset.tag);
     const selectedName = document.getElementById('itemName').value;
+
+    if (!selectedName) {
+      alert('Please enter an item name');
+      return;
+    }
 
     const payload = {
       name: selectedName,
@@ -588,13 +538,19 @@
     };
 
     try {
-      await post({
+      const { body } = await post({
         apiName: 'wardrobeapi',
         path: '/wardrobe',
         options: { body: payload }
       }).response;
+
+      const data = await body.json();
+      console.log('Item saved:', data);
+      alert('Item added to wardrobe!');
+      switchScreen('wardrobe');
     } catch (err) {
       console.error('Backend save failed:', err);
+      alert('Error saving item: ' + err.message);
     }
   };
 
