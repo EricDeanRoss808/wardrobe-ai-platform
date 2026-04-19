@@ -308,9 +308,12 @@
         <div class="pref-row"><div class="pref-row-left"><div class="pref-row-title">Primary colour palette</div><div class="pref-row-val">Neutral, earth tones</div></div><div class="pref-arrow">›</div></div>
       </div>
       <div class="section-head">Settings</div>
-      <div class="pref-card" style="margin-bottom:24px;">
+      <div class="pref-card" style="margin-bottom:16px;">
         <div class="pref-row"><div class="pref-row-title">Daily outfit reminder</div><div class="toggle-switch" id="toggle1" onclick="toggleSwitch('toggle1')"><div class="toggle-knob"></div></div></div>
         <div class="pref-row"><div class="pref-row-title">Suggest new combinations first</div><div class="toggle-switch on" id="toggle2" onclick="toggleSwitch('toggle2')"><div class="toggle-knob"></div></div></div>
+      </div>
+      <div style="padding: 0 20px 32px;">
+        <button onclick="handleSignOut()" style="width:100%;padding:13px;background:transparent;border:0.5px solid rgba(255,255,255,0.18);color:#888;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;">Sign Out</button>
       </div>
     </div>
 
@@ -586,6 +589,16 @@
     window.scrollTo(0, 0);
   }
   window.switchScreen = switchScreen;
+
+  window.handleSignOut = async () => {
+    try {
+      await signOut();
+      location.reload();
+    } catch (e) {
+      console.error('Sign out error:', e);
+      location.reload();
+    }
+  };
 
   function toggleSwitch(id) {
     document.getElementById(id).classList.toggle('on');
