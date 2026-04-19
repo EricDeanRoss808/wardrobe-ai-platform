@@ -6,10 +6,10 @@
   "javascript": {
     "framework": "none",
     "config": {
-      "SourceDir": "src",
-      "DistributionDir": "dist",
-      "BuildCommand": "npm.cmd run-script build",
-      "StartCommand": "npm.cmd run-script start"
+      "SourceDir": ".",
+      "DistributionDir": ".",
+      "BuildCommand": "echo \"No build needed\"",
+      "StartCommand": "echo \"No start needed\""
     }
   },
   "providers": [

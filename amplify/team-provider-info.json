@@ -31,6 +31,12 @@
       },
       "api": {
         "wardrobeapi": {}
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d1xwnlytlc3hu",
+          "type": "manual"
+        }
       }
     }
   }

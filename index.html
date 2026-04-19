@@ -13,6 +13,28 @@
       --text: #fff; --text2: #888; --text3: #444;
       --serif: 'Cormorant Garamond', serif; --sans: 'DM Sans', sans-serif;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInFast {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
     body { background: var(--bg); color: var(--text); font-family: var(--sans); }
     .app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
     .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 56px; border-bottom: 0.5px solid var(--border2); background: var(--bg); flex-shrink: 0; position: sticky; top: 0; z-index: 100; }
@@ -20,21 +42,25 @@
     .logo-main { font-family: var(--sans); font-size: 20px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: #fff; }
     .logo-sub { font-family: var(--sans); font-size: 9px; font-weight: 300; letter-spacing: 0.38em; text-transform: uppercase; color: #fff; margin-top: 3px; }
     .bottomnav { display: flex; background: #fff; flex-shrink: 0; position: sticky; bottom: 0; z-index: 100; }
-    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0 8px; cursor: pointer; transition: color 0.15s; color: #aaa; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; border: none; background: none; font-family: var(--sans); }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0 8px; cursor: pointer; transition: color 0.2s; color: #aaa; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; border: none; background: none; font-family: var(--sans); }
     .nav-item.active { color: #000; }
+    .nav-item svg { width: 20px; height: 20px; transition: transform 0.2s; }
+    .nav-item.active svg { transform: scale(1.1); }
     .nav-item svg { width: 20px; height: 20px; }
     .content { flex: 1; }
     .screen { display: none; }
-    .screen.active { display: block; }
+    .screen.active { display: block; animation: fadeIn 0.25s ease; }
     .screen-header { padding: 20px 20px 12px; display: flex; align-items: flex-end; justify-content: space-between; }
     .screen-title { font-family: var(--serif); font-size: 28px; font-weight: 300; letter-spacing: 0.06em; color: #fff; }
     .screen-subtitle { font-size: 10px; color: var(--text3); margin-top: 3px; letter-spacing: 0.1em; text-transform: uppercase; }
     .filter-row { display: flex; gap: 6px; padding: 0 20px 16px; overflow-x: auto; scrollbar-width: none; }
     .filter-row::-webkit-scrollbar { display: none; }
-    .chip { flex-shrink: 0; padding: 5px 14px; border: 0.5px solid var(--border2); background: transparent; font-size: 11px; color: var(--text2); cursor: pointer; transition: all 0.15s; font-family: var(--sans); letter-spacing: 0.07em; text-transform: uppercase; }
+    .chip { flex-shrink: 0; padding: 5px 14px; border: 0.5px solid var(--border2); background: transparent; font-size: 11px; color: var(--text2); cursor: pointer; transition: all 0.2s; font-family: var(--sans); letter-spacing: 0.07em; text-transform: uppercase; }
     .chip.active { border-color: #fff; background: #fff; color: #000; }
+    .chip:hover:not(.active) { border-color: rgba(255,255,255,0.4); color: #ccc; }
     .clothes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 0 20px 20px; }
-    .cloth-card { background: var(--surface2); overflow: hidden; cursor: pointer; transition: transform 0.15s; position: relative; }
+    .cloth-card { background: var(--surface2); overflow: hidden; cursor: pointer; transition: transform 0.2s, opacity 0.2s; position: relative; animation: slideInUp 0.3s ease both; }
+    .cloth-card:hover { transform: scale(1.02); }
     .cloth-card:active { transform: scale(0.97); }
     .cloth-thumb { width: 100%; aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center; font-size: 32px; position: relative; background: var(--surface3); overflow: hidden; }
     .cloth-tag { position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.8); padding: 2px 6px; font-size: 9px; color: #666; letter-spacing: 0.07em; text-transform: uppercase; }
@@ -42,68 +68,80 @@
     .cloth-name { font-size: 11px; color: #fff; line-height: 1.3; letter-spacing: 0.02em; }
     .cloth-brand { font-size: 10px; color: var(--text3); margin-top: 1px; letter-spacing: 0.04em; }
     .cloth-dot { position: absolute; top: 8px; right: 8px; width: 7px; height: 7px; border-radius: 50%; border: 0.5px solid rgba(255,255,255,0.2); }
-    .fab { display: block; width: 44px; height: 44px; background: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #000; margin: 0 20px 20px auto; transition: transform 0.15s; }
+    .fab { display: flex; width: 44px; height: 44px; background: #fff; border: none; cursor: pointer; align-items: center; justify-content: center; color: #000; margin: 0 20px 20px auto; transition: transform 0.2s, background 0.2s; }
+    .fab:hover { transform: scale(1.08); background: #eee; }
     .fab:active { transform: scale(0.95); }
-    .outfit-card { background: var(--surface2); margin: 0 20px 16px; overflow: hidden; border: 0.5px solid var(--border2); }
-    .outfit-banner { display: flex; height: 120px; gap: 1px; }
-    .outfit-piece { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 36px; background: var(--surface3); }
-    .outfit-piece.tall { flex: 1.4; background: #111; }
+    .outfit-card { background: var(--surface2); margin: 0 20px 16px; overflow: hidden; border: 0.5px solid var(--border2); animation: slideInUp 0.35s ease both; transition: border-color 0.2s; }
+    .outfit-card:hover { border-color: var(--border3); }
     .outfit-details { padding: 14px 16px; }
     .outfit-name { font-family: var(--serif); font-size: 19px; font-weight: 300; letter-spacing: 0.05em; color: #fff; }
     .outfit-meta { font-size: 10px; color: var(--text3); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
     .outfit-pieces-row { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
-    .piece-pill { padding: 4px 10px; background: transparent; font-size: 10px; color: var(--text2); border: 0.5px solid var(--border2); letter-spacing: 0.04em; }
+    .piece-pill { padding: 4px 10px; background: transparent; font-size: 10px; color: var(--text2); border: 0.5px solid var(--border2); letter-spacing: 0.04em; transition: border-color 0.2s, color 0.2s; }
+    .piece-pill:hover { border-color: #fff; color: #fff; }
     .outfit-actions { display: flex; gap: 8px; margin-top: 14px; }
-    .btn-outline { flex: 1; padding: 9px; background: transparent; border: 0.5px solid var(--border2); color: var(--text2); font-size: 11px; cursor: pointer; font-family: var(--sans); transition: all 0.15s; letter-spacing: 0.07em; text-transform: uppercase; }
+    .btn-outline { flex: 1; padding: 9px; background: transparent; border: 0.5px solid var(--border2); color: var(--text2); font-size: 11px; cursor: pointer; font-family: var(--sans); transition: all 0.2s; letter-spacing: 0.07em; text-transform: uppercase; }
     .btn-outline:hover { border-color: #fff; color: #fff; }
-    .btn-accent { flex: 1; padding: 9px; background: #fff; border: none; color: #000; font-size: 11px; cursor: pointer; font-family: var(--sans); font-weight: 500; transition: opacity 0.15s; letter-spacing: 0.07em; text-transform: uppercase; }
+    .btn-outline:active { transform: scale(0.97); }
+    .btn-accent { flex: 1; padding: 9px; background: #fff; border: none; color: #000; font-size: 11px; cursor: pointer; font-family: var(--sans); font-weight: 500; transition: opacity 0.2s, transform 0.2s; letter-spacing: 0.07em; text-transform: uppercase; }
     .btn-accent:hover { opacity: 0.85; }
-    .add-form { padding: 20px; }
+    .btn-accent:active { transform: scale(0.97); }
+    .add-form { padding: 20px; animation: fadeIn 0.25s ease; }
     .upload-zone { border: 0.5px dashed var(--border2); height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; margin-bottom: 24px; cursor: pointer; transition: border-color 0.2s, background 0.2s; background: var(--surface2); }
     .upload-zone:hover { border-color: #fff; background: rgba(255,255,255,0.03); }
-    .upload-icon { width: 36px; height: 36px; color: var(--text3); }
+    .upload-icon { width: 36px; height: 36px; color: var(--text3); transition: color 0.2s; }
+    .upload-zone:hover .upload-icon { color: #888; }
     .upload-label { font-size: 12px; color: var(--text2); letter-spacing: 0.06em; text-transform: uppercase; }
     .upload-sub { font-size: 10px; color: var(--text3); letter-spacing: 0.04em; }
     .field-group { margin-bottom: 16px; }
     .field-label { font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 7px; display: block; }
-    .field-input { width: 100%; background: var(--surface2); border: 0.5px solid var(--border2); padding: 10px 12px; font-size: 13px; color: #fff; font-family: var(--sans); outline: none; transition: border-color 0.15s; }
+    .field-input { width: 100%; background: var(--surface2); border: 0.5px solid var(--border2); padding: 10px 12px; font-size: 13px; color: #fff; font-family: var(--sans); outline: none; transition: border-color 0.2s; }
     .field-input:focus { border-color: #fff; }
     .field-input::placeholder { color: var(--text3); }
-    .field-select { width: 100%; background: var(--surface2); border: 0.5px solid var(--border2); padding: 10px 12px; font-size: 13px; color: var(--text2); font-family: var(--sans); outline: none; appearance: none; cursor: pointer; }
+    .field-select { width: 100%; background: var(--surface2); border: 0.5px solid var(--border2); padding: 10px 12px; font-size: 13px; color: var(--text2); font-family: var(--sans); outline: none; appearance: none; cursor: pointer; transition: border-color 0.2s; }
+    .field-select:focus { border-color: #fff; }
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .color-picker-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-    .color-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; flex-shrink: 0; outline: 2px solid transparent; outline-offset: 2px; }
-    .color-swatch.selected { outline-color: #fff; border-color: transparent; }
+    .color-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; flex-shrink: 0; outline: 2px solid transparent; outline-offset: 2px; }
+    .color-swatch:hover { transform: scale(1.15); }
+    .color-swatch.selected { outline-color: #fff; border-color: transparent; transform: scale(1.1); }
     .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-    .tag-toggle { padding: 5px 12px; border: 0.5px solid var(--border2); background: transparent; font-size: 11px; color: var(--text2); cursor: pointer; transition: all 0.15s; font-family: var(--sans); letter-spacing: 0.05em; text-transform: uppercase; }
+    .tag-toggle { padding: 5px 12px; border: 0.5px solid var(--border2); background: transparent; font-size: 11px; color: var(--text2); cursor: pointer; transition: all 0.2s; font-family: var(--sans); letter-spacing: 0.05em; text-transform: uppercase; }
+    .tag-toggle:hover:not(.selected) { border-color: rgba(255,255,255,0.4); color: #ccc; }
     .tag-toggle.selected { border-color: #fff; background: #fff; color: #000; }
-    .submit-btn { width: 100%; padding: 13px; background: #fff; border: none; color: #000; font-size: 12px; font-weight: 500; cursor: pointer; font-family: var(--sans); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 8px; transition: opacity 0.15s; }
+    .submit-btn { width: 100%; padding: 13px; background: #fff; border: none; color: #000; font-size: 12px; font-weight: 500; cursor: pointer; font-family: var(--sans); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 8px; transition: opacity 0.2s, transform 0.2s; }
     .submit-btn:hover { opacity: 0.85; }
-    .profile-hero { display: flex; flex-direction: column; align-items: center; padding: 32px 20px 20px; text-align: center; border-bottom: 0.5px solid var(--border); }
-    .avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--surface3); border: 1px solid var(--border3); display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 26px; font-weight: 300; color: #fff; margin-bottom: 14px; }
+    .submit-btn:active { transform: scale(0.98); }
+    .profile-hero { display: flex; flex-direction: column; align-items: center; padding: 32px 20px 20px; text-align: center; border-bottom: 0.5px solid var(--border); animation: fadeIn 0.3s ease; }
+    .avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--surface3); border: 1px solid var(--border3); display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 26px; font-weight: 300; color: #fff; margin-bottom: 14px; transition: transform 0.2s; }
+    .avatar:hover { transform: scale(1.05); }
     .profile-name { font-family: var(--serif); font-size: 22px; font-weight: 300; letter-spacing: 0.08em; }
     .profile-handle { font-size: 10px; color: var(--text3); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
     .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: 1px 0 0; border-bottom: 0.5px solid var(--border); }
-    .stat-box { background: var(--surface2); padding: 14px 8px; text-align: center; }
+    .stat-box { background: var(--surface2); padding: 14px 8px; text-align: center; transition: background 0.2s; }
+    .stat-box:hover { background: var(--surface3); }
     .stat-num { font-family: var(--serif); font-size: 24px; font-weight: 300; color: #fff; }
     .stat-lbl { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 3px; }
     .section-head { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.12em; padding: 18px 20px 10px; }
     .pref-card { margin: 0 20px 1px; background: var(--surface2); border: 0.5px solid var(--border); overflow: hidden; }
-    .pref-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 0.5px solid var(--border); cursor: pointer; }
+    .pref-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 0.5px solid var(--border); cursor: pointer; transition: background 0.2s; }
+    .pref-row:hover { background: var(--surface3); }
     .pref-row:last-child { border-bottom: none; }
     .pref-row-left { display: flex; flex-direction: column; gap: 2px; }
     .pref-row-title { font-size: 13px; color: #fff; }
     .pref-row-val { font-size: 10px; color: var(--text3); letter-spacing: 0.04em; }
     .pref-arrow { color: var(--text3); font-size: 14px; }
-    .toggle-switch { width: 36px; height: 20px; background: var(--surface3); border-radius: 100px; position: relative; cursor: pointer; border: 0.5px solid var(--border2); transition: background 0.2s; flex-shrink: 0; }
+    .toggle-switch { width: 36px; height: 20px; background: var(--surface3); border-radius: 100px; position: relative; cursor: pointer; border: 0.5px solid var(--border2); transition: background 0.25s; flex-shrink: 0; }
     .toggle-switch.on { background: #fff; border-color: #fff; }
-    .toggle-knob { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #444; transition: left 0.2s, background 0.2s; }
+    .toggle-knob { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #444; transition: left 0.25s cubic-bezier(0.4,0,0.2,1), background 0.25s; }
     .toggle-switch.on .toggle-knob { left: 18px; background: #000; }
     .style-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; padding: 0 20px 24px; }
-    .style-tile { background: var(--surface2); padding: 14px 8px; text-align: center; font-size: 22px; cursor: pointer; border: 0.5px solid var(--border); transition: all 0.15s; }
-    .style-tile span { display: block; font-size: 9px; color: var(--text3); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .style-tile { background: var(--surface2); padding: 14px 8px; text-align: center; font-size: 22px; cursor: pointer; border: 0.5px solid var(--border); transition: all 0.2s; }
+    .style-tile:hover:not(.selected) { background: var(--surface3); border-color: var(--border2); }
+    .style-tile span { display: block; font-size: 9px; color: var(--text3); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.08em; transition: color 0.2s; }
     .style-tile.selected { border-color: #fff; background: #fff; }
     .style-tile.selected span { color: #000; }
+    .skeleton { background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
   </style>
 </head>
 <body>
@@ -121,7 +159,7 @@
     <!-- WARDROBE -->
     <div class="screen active" id="screen-wardrobe">
       <div class="screen-header">
-        <div><div class="screen-title">My Wardrobe</div><div class="screen-subtitle">38 pieces</div></div>
+        <div><div class="screen-title">My Wardrobe</div><div class="screen-subtitle" id="wardrobeCount">38 pieces</div></div>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </div>
       <div class="filter-row">
@@ -133,12 +171,12 @@
         <div class="chip">Accessories</div>
       </div>
       <div class="clothes-grid">
-        <div class="cloth-card"><div class="cloth-thumb"><div style="font-size:38px;">👕</div><div class="cloth-dot" style="background:#d0ccc0;"></div><div class="cloth-tag">Tops</div></div><div class="cloth-info"><div class="cloth-name">Linen Crewneck</div><div class="cloth-brand">COS</div></div></div>
-        <div class="cloth-card"><div class="cloth-thumb" style="background:#0f0f0f;"><div style="font-size:38px;">👔</div><div class="cloth-dot" style="background:#222238;"></div><div class="cloth-tag">Tops</div></div><div class="cloth-info"><div class="cloth-name">Oxford Button-Down</div><div class="cloth-brand">Uniqlo</div></div></div>
-        <div class="cloth-card"><div class="cloth-thumb" style="background:#0c0c0c;"><div style="font-size:38px;">🧥</div><div class="cloth-dot" style="background:#3a2218;"></div><div class="cloth-tag">Outer</div></div><div class="cloth-info"><div class="cloth-name">Wool Overcoat</div><div class="cloth-brand">Massimo Dutti</div></div></div>
-        <div class="cloth-card"><div class="cloth-thumb" style="background:#0c0e10;"><div style="font-size:38px;">👖</div><div class="cloth-dot" style="background:#182030;"></div><div class="cloth-tag">Bottoms</div></div><div class="cloth-info"><div class="cloth-name">Slim Chinos</div><div class="cloth-brand">Zara</div></div></div>
-        <div class="cloth-card"><div class="cloth-thumb" style="background:#0e0e0c;"><div style="font-size:38px;">👟</div><div class="cloth-dot" style="background:#fff;"></div><div class="cloth-tag">Shoes</div></div><div class="cloth-info"><div class="cloth-name">Leather Derby</div><div class="cloth-brand">Clarks</div></div></div>
-        <div class="cloth-card"><div class="cloth-thumb" style="background:#0c0e0c;"><div style="font-size:38px;">🧣</div><div class="cloth-dot" style="background:#3a5040;"></div><div class="cloth-tag">Accessory</div></div><div class="cloth-info"><div class="cloth-name">Cashmere Scarf</div><div class="cloth-brand">Acne Studios</div></div></div>
+        <div class="cloth-card" style="animation-delay:0.05s"><div class="cloth-thumb"><div style="font-size:38px;">👕</div><div class="cloth-dot" style="background:#d0ccc0;"></div><div class="cloth-tag">Tops</div></div><div class="cloth-info"><div class="cloth-name">Linen Crewneck</div><div class="cloth-brand">COS</div></div></div>
+        <div class="cloth-card" style="animation-delay:0.1s"><div class="cloth-thumb" style="background:#0f0f0f;"><div style="font-size:38px;">👔</div><div class="cloth-dot" style="background:#222238;"></div><div class="cloth-tag">Tops</div></div><div class="cloth-info"><div class="cloth-name">Oxford Button-Down</div><div class="cloth-brand">Uniqlo</div></div></div>
+        <div class="cloth-card" style="animation-delay:0.15s"><div class="cloth-thumb" style="background:#0c0c0c;"><div style="font-size:38px;">🧥</div><div class="cloth-dot" style="background:#3a2218;"></div><div class="cloth-tag">Outer</div></div><div class="cloth-info"><div class="cloth-name">Wool Overcoat</div><div class="cloth-brand">Massimo Dutti</div></div></div>
+        <div class="cloth-card" style="animation-delay:0.2s"><div class="cloth-thumb" style="background:#0c0e10;"><div style="font-size:38px;">👖</div><div class="cloth-dot" style="background:#182030;"></div><div class="cloth-tag">Bottoms</div></div><div class="cloth-info"><div class="cloth-name">Slim Chinos</div><div class="cloth-brand">Zara</div></div></div>
+        <div class="cloth-card" style="animation-delay:0.25s"><div class="cloth-thumb" style="background:#0e0e0c;"><div style="font-size:38px;">👟</div><div class="cloth-dot" style="background:#fff;"></div><div class="cloth-tag">Shoes</div></div><div class="cloth-info"><div class="cloth-name">Leather Derby</div><div class="cloth-brand">Clarks</div></div></div>
+        <div class="cloth-card" style="animation-delay:0.3s"><div class="cloth-thumb" style="background:#0c0e0c;"><div style="font-size:38px;">🧣</div><div class="cloth-dot" style="background:#3a5040;"></div><div class="cloth-tag">Accessory</div></div><div class="cloth-info"><div class="cloth-name">Cashmere Scarf</div><div class="cloth-brand">Acne Studios</div></div></div>
       </div>
       <button class="fab" onclick="switchScreen('add')">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -159,7 +197,7 @@
         <div class="chip">Formal</div>
       </div>
       <div style="padding: 0 20px 16px;">
-        <button id="generateBtn" onclick="generateOutfits()" style="width:100%;padding:14px;background:#fff;border:none;color:#000;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;">✨ Generate My Outfits</button>
+        <button id="generateBtn" onclick="generateOutfits()" style="width:100%;padding:14px;background:#fff;border:none;color:#000;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:opacity 0.2s,transform 0.2s;">✨ Generate My Outfits</button>
       </div>
       <div id="outfitResults"></div>
     </div>
@@ -169,7 +207,6 @@
       <div class="screen-header"><div><div class="screen-title">Add Item</div><div class="screen-subtitle">New piece</div></div></div>
       <div class="add-form">
         <div class="upload-zone" id="uploadZone">
-          <!-- TODO: Wire up to your image upload/storage backend -->
           <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           <div class="upload-label">Upload photo</div>
           <div class="upload-sub">tap or drag & drop</div>
@@ -214,6 +251,9 @@
             <div class="color-swatch" style="background:#405060;" data-color="slate"></div>
             <div class="color-swatch" style="background:#9a6a6a;" data-color="dusty-rose"></div>
             <div class="color-swatch" style="background:#c8a97e;" data-color="tan"></div>
+            <div class="color-swatch" style="background:#cc3333;" data-color="red"></div>
+            <div class="color-swatch" style="background:#3355cc;" data-color="blue"></div>
+            <div class="color-swatch" style="background:#33aa55;" data-color="green"></div>
           </div>
         </div>
         <div class="field-group">
@@ -236,14 +276,12 @@
             <div class="tag-toggle" data-season="winter">Winter</div>
           </div>
         </div>
-        <!-- TODO: On submit, POST form data to your backend API e.g. POST /api/wardrobe -->
         <button class="submit-btn" onclick="handleAddItem()">Add to Wardrobe</button>
       </div>
     </div>
 
     <!-- PROFILE -->
     <div class="screen" id="screen-profile">
-      <!-- TODO: Replace static data with user profile from your auth/backend -->
       <div class="profile-hero">
         <div class="avatar">A</div>
         <div class="profile-name">Alex Monroe</div>
@@ -274,7 +312,7 @@
         <div class="pref-row"><div class="pref-row-title">Suggest new combinations first</div><div class="toggle-switch on" id="toggle2" onclick="toggleSwitch('toggle2')"><div class="toggle-knob"></div></div></div>
       </div>
       <div style="padding: 0 20px 32px;">
-        <button onclick="handleSignOut()" style="width:100%;padding:13px;background:transparent;border:0.5px solid rgba(255,255,255,0.18);color:#888;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;">Sign Out</button>
+        <button onclick="handleSignOut()" style="width:100%;padding:13px;background:transparent;border:0.5px solid rgba(255,255,255,0.18);color:#888;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color 0.2s,color 0.2s;">Sign Out</button>
       </div>
     </div>
 
@@ -341,7 +379,6 @@
     const user = await getCurrentUser();
     document.querySelector('.profile-name').textContent = user.username;
     document.querySelector('.profile-handle').textContent = '@' + user.username;
-    loadWardrobe();
   } catch {
     showLoginModal();
   }
@@ -349,31 +386,37 @@
   function showLoginModal() {
     const modal = document.createElement('div');
     modal.id = 'authModal';
-    modal.style.cssText = 'position:fixed;inset:0;background:#000;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;';
+    modal.style.cssText = 'position:fixed;inset:0;background:#000;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;animation:fadeIn 0.3s ease;';
     renderSignIn(modal);
     document.body.appendChild(modal);
   }
 
   function renderSignIn(modal) {
     modal.innerHTML = `
-      <div style="width:100%;max-width:320px;display:flex;flex-direction:column;">
+      <div style="width:100%;max-width:320px;display:flex;flex-direction:column;animation:slideInUp 0.3s ease;">
         <div style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#fff;letter-spacing:0.08em;margin-bottom:4px;">Drip</div>
         <div style="font-size:9px;color:#444;letter-spacing:0.35em;text-transform:uppercase;margin-bottom:40px;">Management</div>
         <div style="font-size:10px;color:#666;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:24px;">Sign in to your account</div>
-        <input id="authEmail" type="email" placeholder="Email address" style="width:100%;padding:12px;background:#111;border:0.5px solid #333;border-bottom:none;color:#fff;font-size:13px;outline:none;">
-        <input id="authPassword" type="password" placeholder="Password" style="width:100%;padding:12px;background:#111;border:0.5px solid #333;color:#fff;font-size:13px;outline:none;margin-bottom:12px;">
-        <button id="btnSignIn" style="width:100%;padding:13px;background:#fff;border:none;color:#000;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-weight:500;margin-bottom:8px;">Sign In</button>
-        <button id="btnGoSignUp" style="width:100%;padding:13px;background:transparent;border:0.5px solid #333;color:#888;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;">Create Account</button>
+        <input id="authEmail" type="email" placeholder="Email address" style="width:100%;padding:12px;background:#111;border:0.5px solid #333;border-bottom:none;color:#fff;font-size:13px;outline:none;transition:border-color 0.2s;">
+        <input id="authPassword" type="password" placeholder="Password" style="width:100%;padding:12px;background:#111;border:0.5px solid #333;color:#fff;font-size:13px;outline:none;margin-bottom:12px;transition:border-color 0.2s;">
+        <button id="btnSignIn" style="width:100%;padding:13px;background:#fff;border:none;color:#000;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-weight:500;margin-bottom:8px;transition:opacity 0.2s,transform 0.2s;">Sign In</button>
+        <button id="btnGoSignUp" style="width:100%;padding:13px;background:transparent;border:0.5px solid #333;color:#888;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:border-color 0.2s,color 0.2s;">Create Account</button>
         <div id="authError" style="color:#e55;font-size:11px;margin-top:12px;text-align:center;min-height:16px;"></div>
       </div>
     `;
     modal.querySelector('#btnSignIn').onclick = async () => {
       const err = modal.querySelector('#authError');
+      const btn = modal.querySelector('#btnSignIn');
       err.style.color = '#e55'; err.textContent = '';
+      btn.textContent = 'Signing in...'; btn.style.opacity = '0.7';
       try {
         await signIn({ username: modal.querySelector('#authEmail').value, password: modal.querySelector('#authPassword').value });
-        modal.remove(); location.reload();
-      } catch (e) { err.textContent = e.message; }
+        modal.style.animation = 'fadeInFast 0.2s ease reverse';
+        setTimeout(() => { modal.remove(); location.reload(); }, 200);
+      } catch (e) {
+        err.textContent = e.message;
+        btn.textContent = 'Sign In'; btn.style.opacity = '1';
+      }
     };
     modal.querySelector('#btnGoSignUp').onclick = () => renderSignUp(modal);
     modal.querySelector('#authPassword').addEventListener('keydown', e => { if (e.key === 'Enter') modal.querySelector('#btnSignIn').click(); });
@@ -381,14 +424,14 @@
 
   function renderSignUp(modal) {
     modal.innerHTML = `
-      <div style="width:100%;max-width:320px;display:flex;flex-direction:column;">
+      <div style="width:100%;max-width:320px;display:flex;flex-direction:column;animation:slideInUp 0.3s ease;">
         <div style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#fff;letter-spacing:0.08em;margin-bottom:4px;">Drip</div>
         <div style="font-size:9px;color:#444;letter-spacing:0.35em;text-transform:uppercase;margin-bottom:40px;">Management</div>
         <div style="font-size:10px;color:#666;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:24px;">Create your account</div>
         <input id="authEmail" type="email" placeholder="Email address" style="width:100%;padding:12px;background:#111;border:0.5px solid #333;border-bottom:none;color:#fff;font-size:13px;outline:none;">
         <input id="authPassword" type="password" placeholder="Password (8+ characters)" style="width:100%;padding:12px;background:#111;border:0.5px solid #333;border-bottom:none;color:#fff;font-size:13px;outline:none;">
         <input id="authPassword2" type="password" placeholder="Confirm password" style="width:100%;padding:12px;background:#111;border:0.5px solid #333;color:#fff;font-size:13px;outline:none;margin-bottom:12px;">
-        <button id="btnSignUp" style="width:100%;padding:13px;background:#fff;border:none;color:#000;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-weight:500;margin-bottom:8px;">Create Account</button>
+        <button id="btnSignUp" style="width:100%;padding:13px;background:#fff;border:none;color:#000;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-weight:500;margin-bottom:8px;transition:opacity 0.2s;">Create Account</button>
         <button id="btnGoSignIn" style="width:100%;padding:13px;background:transparent;border:0.5px solid #333;color:#888;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;">Back to Sign In</button>
         <div id="authError" style="color:#e55;font-size:11px;margin-top:12px;text-align:center;min-height:16px;"></div>
       </div>
@@ -411,13 +454,13 @@
 
   function renderConfirm(modal, email) {
     modal.innerHTML = `
-      <div style="width:100%;max-width:320px;display:flex;flex-direction:column;">
+      <div style="width:100%;max-width:320px;display:flex;flex-direction:column;animation:slideInUp 0.3s ease;">
         <div style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#fff;letter-spacing:0.08em;margin-bottom:4px;">Drip</div>
         <div style="font-size:9px;color:#444;letter-spacing:0.35em;text-transform:uppercase;margin-bottom:40px;">Management</div>
         <div style="font-size:10px;color:#666;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Check your email</div>
         <div style="font-size:12px;color:#666;line-height:1.7;margin-bottom:24px;">We sent a code to <span style="color:#fff;">${email}</span>. Enter it below to activate your account.</div>
         <input id="confirmCode" type="text" placeholder="000000" maxlength="6" style="width:100%;padding:14px;background:#111;border:0.5px solid #333;color:#fff;font-size:22px;outline:none;letter-spacing:0.3em;text-align:center;margin-bottom:12px;">
-        <button id="btnConfirm" style="width:100%;padding:13px;background:#fff;border:none;color:#000;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-weight:500;margin-bottom:8px;">Confirm Account</button>
+        <button id="btnConfirm" style="width:100%;padding:13px;background:#fff;border:none;color:#000;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-weight:500;margin-bottom:8px;transition:opacity 0.2s;">Confirm Account</button>
         <button id="btnResend" style="width:100%;padding:13px;background:transparent;border:0.5px solid #333;color:#888;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;margin-bottom:8px;">Resend Code</button>
         <button id="btnBackSignIn" style="width:100%;padding:13px;background:transparent;border:none;color:#555;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">Back to Sign In</button>
         <div id="authError" style="color:#e55;font-size:11px;margin-top:12px;text-align:center;min-height:16px;"></div>
@@ -455,47 +498,28 @@
     input.onchange = async (e) => {
       const file = e.target.files[0];
       if (!file) return;
-
       const allowedTypes = ['image/jpeg', 'image/png'];
       if (!allowedTypes.includes(file.type)) {
         alert('Please upload a JPG or PNG image only.');
         return;
       }
-
-      // Show local preview immediately
       const reader = new FileReader();
       reader.onload = (ev) => {
         const zone = document.getElementById('uploadZone');
         zone.style.padding = '0';
         zone.style.border = 'none';
-        zone.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:0;" />`;
+        zone.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:0;animation:fadeInFast 0.3s ease;" />`;
         window._uploadedPhotoDataUrl = ev.target.result;
       };
       reader.readAsDataURL(file);
-
-      document.querySelector('.upload-label').textContent = 'Uploading...';
-      document.querySelector('.upload-sub').textContent = 'Analyzing your clothing...';
-
       try {
         const userId = await getUserId();
         await uploadData({
           key: `uploads/${userId}/${Date.now()}-${file.name}`,
           data: file,
-          options: {
-            contentType: file.type,
-            accessLevel: 'public'
-          }
+          options: { contentType: file.type, accessLevel: 'public' }
         }).result;
-
-        document.querySelector('.upload-label').textContent = '✓ Photo uploaded!';
-        document.querySelector('.upload-sub').textContent = 'AI is analyzing your clothes...';
-
-        setTimeout(() => {
-          document.querySelector('.upload-sub').textContent = 'Ready! Go to Wardrobe to see your items.';
-        }, 8000);
-
       } catch (err) {
-        document.querySelector('.upload-label').textContent = 'Upload failed';
         console.error('Upload error:', err);
       }
     };
@@ -503,25 +527,27 @@
   };
 
   window.handleAddItem = async () => {
-    const selectedColor = document.querySelector('#colorPicker .color-swatch.selected')?.dataset.color || 'unknown';
-    const selectedCategory = document.getElementById('itemCategory').value || 'tops';
-    const selectedFit = document.getElementById('itemFit').value || 'regular';
-    const selectedTags = [...document.querySelectorAll('#tagRow .tag-toggle.selected')].map(t => t.dataset.tag);
-    const selectedName = document.getElementById('itemName').value;
+    // READ ALL VALUES FIRST before any resets
+    const name = document.getElementById('itemName').value;
+    const brand = document.getElementById('itemBrand').value;
+    const category = document.getElementById('itemCategory').value || 'tops';
+    const fit = document.getElementById('itemFit').value || 'regular';
+    const color = document.querySelector('#colorPicker .color-swatch.selected')?.dataset.color || 'unknown';
+    const tags = [...document.querySelectorAll('#tagRow .tag-toggle.selected')].map(t => t.dataset.tag);
+    const seasons = [...document.querySelectorAll('#seasonRow .tag-toggle.selected')].map(t => t.dataset.season);
+    const photoDataUrl = window._uploadedPhotoDataUrl || null;
 
-    if (!selectedName) {
-      alert('Please enter an item name');
-      return;
-    }
+    if (!name) { alert('Please enter an item name.'); return; }
 
+    // BUILD PAYLOAD with all values captured above
     const payload = {
-      name: selectedName,
-      brand: document.getElementById('itemBrand').value,
-      category: selectedCategory,
-      fit: selectedFit,
-      color: selectedColor,
-      tags: selectedTags,
-      seasons: [...document.querySelectorAll('#seasonRow .tag-toggle.selected')].map(t => t.dataset.season),
+      name,
+      brand,
+      category,
+      fit,
+      color,
+      tags,
+      seasons,
       photoKey: window._uploadedPhotoKey || null,
       status: 'success',
       confidence: '90.0',
@@ -529,84 +555,70 @@
       imageUrl: '',
       detectedItems: [],
       cleanedLabels: {
-        itemTypes: [selectedCategory],
-        colors: [selectedColor],
+        itemTypes: [category],
+        colors: [color],
         materials: [],
-        style: selectedTags,
-        fit: [selectedFit],
+        style: tags,
+        fit: [fit],
         patterns: []
       }
     };
 
+    // Add card to wardrobe grid with animation
+    const grid = document.querySelector('.clothes-grid');
+    const thumb = photoDataUrl
+      ? `<img src="${photoDataUrl}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" />`
+      : `<div style="font-size:32px;">👕</div>`;
+    const card = document.createElement('div');
+    card.className = 'cloth-card';
+    card.style.animationDelay = '0s';
+    card.innerHTML = `
+      <div class="cloth-thumb" style="position:relative;">
+        ${thumb}
+        <div class="cloth-tag">${{tops:'Tops',bottoms:'Bottoms',outerwear:'Outerwear',shoes:'Shoes',accessories:'Accessories'}[category] || category || 'Item'}</div>
+      </div>
+      <div class="cloth-info">
+        <div class="cloth-name">${name}</div>
+        <div class="cloth-brand">${brand || ''}</div>
+      </div>`;
+    grid.appendChild(card);
+
+    // Update piece count
+    const subtitle = document.querySelector('#screen-wardrobe .screen-subtitle');
+    if (subtitle) {
+      const current = parseInt(subtitle.textContent) || 0;
+      subtitle.textContent = (current + 1) + ' pieces';
+    }
+
+    // Reset form
+    document.getElementById('itemName').value = '';
+    document.getElementById('itemBrand').value = '';
+    document.getElementById('itemCategory').value = '';
+    document.getElementById('itemFit').value = '';
+    const zone = document.getElementById('uploadZone');
+    zone.style.padding = '';
+    zone.style.border = '';
+    zone.innerHTML = `
+      <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <div class="upload-label">Upload photo</div>
+      <div class="upload-sub">tap or drag & drop</div>`;
+    window._uploadedPhotoKey = null;
+    window._uploadedPhotoDataUrl = null;
+
+    switchScreen('wardrobe');
+
+    // Send to backend with correct payload
     try {
-      const { body } = await post({
+      await post({
         apiName: 'wardrobeapi',
         path: '/wardrobe',
         options: { body: payload }
       }).response;
-
-      const data = await body.json();
-      console.log('Item saved:', data);
-      alert('Item added to wardrobe!');
-      switchScreen('wardrobe');
+      console.log('Item saved:', payload.name, payload.color, payload.cleanedLabels);
     } catch (err) {
       console.error('Backend save failed:', err);
-      alert('Error saving item: ' + err.message);
     }
   };
-
-  async function loadWardrobe() {
-    try {
-      await getUserId();
-      const { body } = await get({
-        apiName: 'wardrobeapi',
-        path: '/wardrobe'
-      }).response;
-      const items = await body.json();
-      console.log('Wardrobe items:', items);
-
-      if (!items || items.length === 0) return;
-
-      const grid = document.querySelector('.clothes-grid');
-      if (!grid) return;
-
-      grid.innerHTML = items.map(item => {
-        const labels = item.cleanedLabels || {};
-        const types = labels.itemTypes || [item.category || 'Item'];
-        const colors = labels.colors || [item.color || ''];
-        const itemType = types[0] || 'Item';
-        const color = colors[0] || '';
-        const emoji = getClothingEmoji(itemType);
-        return `
-          <div class="cloth-card">
-            <div class="cloth-thumb">
-              <div style="font-size:38px;">${emoji}</div>
-              <div class="cloth-tag">${itemType}</div>
-            </div>
-            <div class="cloth-info">
-              <div class="cloth-name">${item.name || itemType}</div>
-              <div class="cloth-brand">${color}</div>
-            </div>
-          </div>`;
-      }).join('');
-
-    } catch (err) {
-      console.error('Error loading wardrobe:', err);
-    }
-  }
-
-  function getClothingEmoji(type) {
-    const map = {
-      'Shirt': '👔', 'T-Shirt': '👕', 'Blouse': '👚',
-      'Pants': '👖', 'Shorts': '🩳', 'Skirt': '👗',
-      'Jacket': '🧥', 'Hoodie': '🧥', 'Sweater': '🧶',
-      'Shoes': '👟', 'Hat': '🧢', 'Bag': '👜',
-      'Dress': '👗', 'Coat': '🧥', 'Belt': '👔',
-      'tops': '👕', 'bottoms': '👖', 'outerwear': '🧥',
-      'shoes': '👟', 'accessories': '🧣'
-    };
-    return map[type] || '👕';
-  }
 
   function switchScreen(name) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -614,7 +626,6 @@
     document.getElementById('screen-' + name).classList.add('active');
     document.getElementById('nav-' + name).classList.add('active');
     window.scrollTo(0, 0);
-    if (name === 'wardrobe') loadWardrobe();
   }
   window.switchScreen = switchScreen;
 
@@ -648,7 +659,6 @@
     t.addEventListener('click', () => t.classList.toggle('selected'));
   });
 
-  // Wardrobe filter chips
   document.querySelectorAll('#screen-wardrobe .filter-row .chip').forEach(c => {
     c.addEventListener('click', () => {
       document.querySelectorAll('#screen-wardrobe .filter-row .chip').forEach(x => x.classList.remove('active'));
@@ -656,21 +666,13 @@
       const filter = c.textContent.trim().toLowerCase();
       document.querySelectorAll('.clothes-grid .cloth-card').forEach(card => {
         const tag = card.querySelector('.cloth-tag')?.textContent.trim().toLowerCase() || '';
-        if (filter === 'all') {
-          card.style.display = '';
-        } else if (filter === 'tops' && tag === 'tops') {
-          card.style.display = '';
-        } else if (filter === 'bottoms' && tag === 'bottoms') {
-          card.style.display = '';
-        } else if (filter === 'outerwear' && (tag === 'outer' || tag === 'outerwear')) {
-          card.style.display = '';
-        } else if (filter === 'shoes' && tag === 'shoes') {
-          card.style.display = '';
-        } else if (filter === 'accessories' && (tag === 'accessory' || tag === 'accessories')) {
-          card.style.display = '';
-        } else {
-          card.style.display = 'none';
-        }
+        if (filter === 'all') { card.style.display = ''; }
+        else if (filter === 'tops' && tag === 'tops') { card.style.display = ''; }
+        else if (filter === 'bottoms' && tag === 'bottoms') { card.style.display = ''; }
+        else if (filter === 'outerwear' && (tag === 'outer' || tag === 'outerwear')) { card.style.display = ''; }
+        else if (filter === 'shoes' && tag === 'shoes') { card.style.display = ''; }
+        else if (filter === 'accessories' && (tag === 'accessory' || tag === 'accessories')) { card.style.display = ''; }
+        else { card.style.display = 'none'; }
       });
     });
   });
@@ -679,47 +681,41 @@
     const btn = document.getElementById('generateBtn');
     const results = document.getElementById('outfitResults');
     btn.textContent = '⏳ Starting...';
+    btn.style.opacity = '0.7';
     btn.disabled = true;
     results.innerHTML = `
-      <div style="text-align:center;padding:40px;color:#666;">
-        <div style="font-size:24px;margin-bottom:12px;">🤖</div>
+      <div style="text-align:center;padding:40px;color:#666;animation:fadeIn 0.3s ease;">
+        <div style="font-size:24px;margin-bottom:12px;animation:pulse 1.5s infinite;">🤖</div>
         <div style="font-size:13px;letter-spacing:0.06em;" id="statusText">AI is styling your wardrobe...</div>
         <div style="font-size:11px;color:#444;margin-top:8px;">This takes about 60 seconds</div>
+        <div style="margin-top:20px;height:1px;background:linear-gradient(90deg,transparent,#333,transparent);animation:shimmer 2s infinite;background-size:200% 100%;"></div>
       </div>`;
     try {
       const userId = await getUserId();
-
-      // Trigger generation (returns instantly)
       await post({
         apiName: 'wardrobeapi',
         path: '/outfits',
         options: { body: { userId } }
       }).response;
 
-      // Poll every 5 seconds for results
       let attempts = 0;
-      const maxAttempts = 60; // 5 minutes max
+      const maxAttempts = 60;
 
       const poll = async () => {
         attempts++;
         const statusEl = document.getElementById('statusText');
-        if (statusEl) statusEl.textContent = `AI is working... (${attempts * 5}s)`;
+        if (statusEl) statusEl.textContent = `AI is working... (${attempts * 8}s)`;
         try {
-          const { body } = await get({
-            apiName: 'wardrobeapi',
-            path: '/outfits'
-          }).response;
+          const { body } = await get({ apiName: 'wardrobeapi', path: '/outfits' }).response;
           const data = await body.json();
           if (data && data.length > 0) {
             const withMockups = data.filter(record => {
               const outfits = record.outfits || [];
               return outfits.some(o => {
-                const url = o.mockup_image_url
-                  || (o.M && o.M.mockup_image_url && o.M.mockup_image_url.S);
+                const url = o.mockup_image_url || (o.M && o.M.mockup_image_url && o.M.mockup_image_url.S);
                 return !!url;
               });
             });
-
             if (withMockups.length > 0) {
               const latest = withMockups[withMockups.length - 1];
               const outfits = latest.outfits.map(o => {
@@ -737,32 +733,30 @@
                 }
                 return o;
               });
-
               displayOutfits(outfits);
               btn.textContent = '✨ Regenerate Outfits';
+              btn.style.opacity = '1';
               btn.disabled = false;
               return;
             }
           }
-          if (attempts < maxAttempts) {
-            setTimeout(poll, 8000);
-          } else {
-            results.innerHTML = `<div style="padding:20px;color:#e55;">Generation timed out. Please try again.</div>`;
+          if (attempts < maxAttempts) { setTimeout(poll, 8000); }
+          else {
+            results.innerHTML = `<div style="padding:20px;color:#e55;animation:fadeIn 0.3s ease;">Generation timed out. Please try again.</div>`;
             btn.textContent = '✨ Generate My Outfits';
+            btn.style.opacity = '1';
             btn.disabled = false;
           }
         } catch (err) {
           if (attempts < maxAttempts) setTimeout(poll, 8000);
         }
       };
-
-      // Start polling after 15 seconds
       setTimeout(poll, 30000);
-
     } catch (err) {
       console.error('Generation error:', err);
-      results.innerHTML = `<div style="padding:20px;color:#e55;">Error: ${err.message}</div>`;
+      results.innerHTML = `<div style="padding:20px;color:#e55;animation:fadeIn 0.3s ease;">Error: ${err.message}</div>`;
       btn.textContent = '✨ Generate My Outfits';
+      btn.style.opacity = '1';
       btn.disabled = false;
     }
   }
@@ -774,22 +768,22 @@
       results.innerHTML = `<div style="padding:20px;color:#666;">No outfits generated yet.</div>`;
       return;
     }
-    results.innerHTML = outfits.map(outfit => {
+    results.innerHTML = outfits.map((outfit, i) => {
       const style = outfit.style || 'casual';
       const reasoning = outfit.reasoning || '';
       const imageUrl = outfit.mockup_image_url;
       const items = outfit.items_detail || [];
       const uniqueItems = items.filter((item, index, self) =>
-        index === self.findIndex(i => i.itemId === item.itemId)
+        index === self.findIndex(x => x.itemId === item.itemId)
       );
       const itemPills = uniqueItems.map(item =>
         item.itemTypes.map(t => `<div class="piece-pill">${t}</div>`).join('')
       ).join('');
       return `
-        <div class="outfit-card">
-          <div style="width:100%;aspect-ratio:1;overflow:hidden;background:#111;">
+        <div class="outfit-card" style="animation-delay:${i * 0.1}s;">
+          <div style="width:100%;aspect-ratio:1;overflow:hidden;background:#111;position:relative;">
             ${imageUrl
-              ? `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div style=padding:20px;color:#444;text-align:center>Image unavailable</div>'">`
+              ? `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;animation:fadeInFast 0.5s ease;" onerror="this.parentElement.innerHTML='<div style=padding:20px;color:#444;text-align:center>Image unavailable</div>'">`
               : `<div style="padding:40px;text-align:center;color:#444;">No image generated</div>`}
           </div>
           <div class="outfit-details">
@@ -806,7 +800,6 @@
     }).join('');
   }
 
-  // Outfit filter chips (no filtering logic needed on frontend — just style)
   document.querySelectorAll('#screen-outfits .filter-row .chip').forEach(c => {
     c.addEventListener('click', () => {
       document.querySelectorAll('#screen-outfits .filter-row .chip').forEach(x => x.classList.remove('active'));
