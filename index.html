@@ -158,51 +158,10 @@
         <div class="chip">Weekend</div>
         <div class="chip">Formal</div>
       </div>
-      <!-- TODO: Replace these static outfit cards with dynamic data from your AI/backend -->
-      <div class="outfit-card">
-        <div class="outfit-banner">
-          <div class="outfit-piece" style="font-size:40px;">🧥</div>
-          <div class="outfit-piece tall" style="font-size:40px;">👔</div>
-          <div class="outfit-piece" style="font-size:40px;">👖</div>
-          <div class="outfit-piece" style="background:#0d0d0d;font-size:40px;">👟</div>
-        </div>
-        <div class="outfit-details">
-          <div class="outfit-name">The Sharp Neutral</div>
-          <div class="outfit-meta">Office · 4 pieces</div>
-          <div class="outfit-pieces-row">
-            <div class="piece-pill">Wool Overcoat</div>
-            <div class="piece-pill">Oxford Button-Down</div>
-            <div class="piece-pill">Slim Chinos</div>
-            <div class="piece-pill">Leather Derby</div>
-          </div>
-          <div class="outfit-actions">
-            <button class="btn-outline">Save</button>
-            <button class="btn-outline">Remix</button>
-            <button class="btn-accent">Wear Today</button>
-          </div>
-        </div>
+      <div style="padding: 0 20px 16px;">
+        <button id="generateBtn" onclick="generateOutfits()" style="width:100%;padding:14px;background:#fff;border:none;color:#000;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;">✨ Generate My Outfits</button>
       </div>
-      <div class="outfit-card">
-        <div class="outfit-banner">
-          <div class="outfit-piece tall" style="font-size:40px;">👕</div>
-          <div class="outfit-piece" style="font-size:40px;">👖</div>
-          <div class="outfit-piece" style="background:#0d0d0d;font-size:40px;">🧣</div>
-        </div>
-        <div class="outfit-details">
-          <div class="outfit-name">Casual Elevated</div>
-          <div class="outfit-meta">Weekend · 3 pieces</div>
-          <div class="outfit-pieces-row">
-            <div class="piece-pill">Linen Crewneck</div>
-            <div class="piece-pill">Slim Chinos</div>
-            <div class="piece-pill">Cashmere Scarf</div>
-          </div>
-          <div class="outfit-actions">
-            <button class="btn-outline">Save</button>
-            <button class="btn-outline">Remix</button>
-            <button class="btn-accent">Wear Today</button>
-          </div>
-        </div>
-      </div>
+      <div id="outfitResults"></div>
     </div>
 
     <!-- ADD ITEM -->
@@ -343,9 +302,14 @@
 
 <script type="module">
   import { Amplify } from 'https://esm.sh/aws-amplify';
-  import { signIn, signUp, signOut, getCurrentUser } from 'https://esm.sh/aws-amplify/auth';
+  import { signIn, signUp, signOut, getCurrentUser, fetchAuthSession } from 'https://esm.sh/aws-amplify/auth';
   import { uploadData } from 'https://esm.sh/aws-amplify/storage';
   import { post } from 'https://esm.sh/aws-amplify/api';
+
+  async function getUserId() {
+    const session = await fetchAuthSession();
+    return session.identityId;
+  }
 
   Amplify.configure({
     Auth: {
@@ -485,10 +449,16 @@
   document.getElementById('uploadZone').onclick = () => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*';
+    input.accept = 'image/jpeg,image/png';
     input.onchange = async (e) => {
       const file = e.target.files[0];
       if (!file) return;
+
+      const allowedTypes = ['image/jpeg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Please upload a JPG or PNG image only.');
+        return;
+      }
 
       // Show local preview immediately
       const reader = new FileReader();
@@ -501,16 +471,30 @@
       };
       reader.readAsDataURL(file);
 
-      // Upload to S3
+      document.querySelector('.upload-label').textContent = 'Uploading...';
+      document.querySelector('.upload-sub').textContent = 'Analyzing your clothing...';
+
       try {
-        const result = await uploadData({
-          key: `uploads/${(await getCurrentUser()).userId}/${Date.now()}-${file.name}`,
+        const userId = await getUserId();
+        await uploadData({
+          key: `uploads/${userId}/${Date.now()}-${file.name}`,
           data: file,
-          options: { contentType: file.type }
-        });
-        window._uploadedPhotoKey = result.key;
+          options: {
+            contentType: file.type,
+            accessLevel: 'public'
+          }
+        }).result;
+
+        document.querySelector('.upload-label').textContent = '✓ Photo uploaded!';
+        document.querySelector('.upload-sub').textContent = 'AI is analyzing your clothes...';
+
+        setTimeout(() => {
+          document.querySelector('.upload-sub').textContent = 'Ready! Go to Wardrobe to see your items.';
+        }, 8000);
+
       } catch (err) {
-        console.error('Upload failed:', err);
+        document.querySelector('.upload-label').textContent = 'Upload failed';
+        console.error('Upload error:', err);
       }
     };
     input.click();
@@ -648,6 +632,81 @@
       });
     });
   });
+
+  async function generateOutfits() {
+    const btn = document.getElementById('generateBtn');
+    const results = document.getElementById('outfitResults');
+    btn.textContent = '⏳ Generating outfits...';
+    btn.disabled = true;
+    results.innerHTML = `
+      <div style="text-align:center;padding:40px;color:#666;">
+        <div style="font-size:24px;margin-bottom:12px;">🤖</div>
+        <div style="font-size:13px;letter-spacing:0.06em;">AI is styling your wardrobe...</div>
+        <div style="font-size:11px;color:#444;margin-top:8px;">This takes about 60 seconds</div>
+      </div>`;
+    try {
+      const userId = await getUserId();
+      const { body } = await post({
+        apiName: 'wardrobeapi',
+        path: '/outfits',
+        options: { body: { userId } }
+      }).response;
+      const data = await body.json();
+      console.log('Outfit response:', data);
+      if (data.mockups && data.mockups.mockups) {
+        displayOutfits(data.mockups.mockups, data.outfits.outfits);
+      } else {
+        results.innerHTML = `<div style="padding:20px;color:#e55;">Could not generate outfits. Make sure you have uploaded photos first.</div>`;
+      }
+      btn.textContent = '✨ Regenerate Outfits';
+      btn.disabled = false;
+    } catch (err) {
+      console.error('Generation error:', err);
+      results.innerHTML = `<div style="padding:20px;color:#e55;">Error: ${err.message}</div>`;
+      btn.textContent = '✨ Generate My Outfits';
+      btn.disabled = false;
+    }
+  }
+  window.generateOutfits = generateOutfits;
+
+  function displayOutfits(mockups, outfits) {
+    const results = document.getElementById('outfitResults');
+    if (!mockups || mockups.length === 0) {
+      results.innerHTML = `<div style="padding:20px;color:#666;">No outfits generated yet.</div>`;
+      return;
+    }
+    const outfitMap = {};
+    if (outfits) { outfits.forEach(o => { outfitMap[o.outfit_id] = o; }); }
+    results.innerHTML = mockups.map(mockup => {
+      const outfit = outfitMap[mockup.outfit_id] || {};
+      const style = mockup.style || 'casual';
+      const reasoning = outfit.reasoning || '';
+      const imageUrl = mockup.mockup_image_url;
+      const items = outfit.items_detail || [];
+      const itemPills = items
+        .filter((item, index, self) => index === self.findIndex(i => i.itemId === item.itemId))
+        .map(item => item.itemTypes.map(t => `<div class="piece-pill">${t}</div>`).join(''))
+        .join('');
+      return `
+        <div class="outfit-card">
+          <div style="width:100%;aspect-ratio:1;overflow:hidden;background:#111;">
+            ${imageUrl
+              ? `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div style=\'padding:20px;color:#444;text-align:center;\'>Image loading...</div>'">`
+              : `<div style="padding:40px;text-align:center;color:#444;">Generating image...</div>`}
+          </div>
+          <div class="outfit-details">
+            <div class="outfit-name" style="text-transform:capitalize;">${style} Look</div>
+            <div class="outfit-meta">${items.length} pieces</div>
+            ${reasoning ? `<div style="font-size:11px;color:#666;margin-top:6px;line-height:1.5;">${reasoning}</div>` : ''}
+            <div class="outfit-pieces-row">${itemPills}</div>
+            <div class="outfit-actions">
+              <button class="btn-outline">Save</button>
+              <button class="btn-accent">Wear Today</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
 
   // Outfit filter chips (no filtering logic needed on frontend — just style)
   document.querySelectorAll('#screen-outfits .filter-row .chip').forEach(c => {
