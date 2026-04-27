@@ -1,77 +1,104 @@
 # Wardrobe AI Platform
 
+AI-powered wardrobe management system built on AWS serverless architecture, enabling users to store clothing items and generate AI-based outfit recommendations.
+
+---
+
 ## Overview
 
-Wardrobe AI Platform is an AI-powered wardrobe management application originally developed during an AWS hackathon. The app allows users to upload clothing images, store them in a digital wardrobe, and receive AI-generated outfit recommendations.
+Wardrobe AI Platform is an AI-powered wardrobe management application originally developed during an AWS hackathon. The platform allows users to upload clothing images, organize them into a digital wardrobe, and receive outfit recommendations generated through AI.
 
-This repository represents my personal portfolio version of the project, focused on backend architecture, AWS integration, and system design.
+This repository represents my personal portfolio version of the project, with a focus on backend architecture, AWS integration, and system design.
+
+---
 
 ## My Role
 
-I focused on backend infrastructure and cloud integration, using AI-assisted development tools to support implementation and debugging.
+I focused on backend infrastructure and cloud integration, using AI-assisted development tools to accelerate implementation and debugging.
 
-My contributions involved working with and connecting core AWS services, including:
+My contributions centered on integrating core AWS services and enabling data flow across the system:
 
-- AWS S3 for storing user-uploaded clothing images
-- AWS DynamoDB for storing structured wardrobe data and AI-generated metadata
-- AWS Lambda for backend processing
-- API Gateway for handling frontend-backend communication
-- AWS Amplify for deployment and integration
+- Configured AWS S3 for storing user-uploaded clothing images  
+- Structured DynamoDB tables for wardrobe data and AI-generated metadata  
+- Implemented backend logic using AWS Lambda  
+- Connected frontend and backend through API Gateway  
+- Used AWS Amplify to support deployment and service integration  
 
-AI tools were used to assist with generating code, troubleshooting issues, and understanding how AWS services interact. I verified, adapted, and integrated this code to ensure the system worked cohesively.
+AI tools were used to assist with code generation, debugging, and understanding AWS service interactions. I verified, adapted, and integrated outputs to ensure the system functioned cohesively.
+
+---
 
 ## Tech Stack
 
-- React
-- AWS Amplify
-- AWS Cognito
-- AWS S3
-- AWS DynamoDB
-- AWS Lambda
-- API Gateway
-- AWS Rekognition
-- OpenAI API
+**Frontend:**  
+- React  
+
+**Cloud & Backend:**  
+- AWS Amplify  
+- AWS Cognito  
+- AWS S3  
+- AWS DynamoDB  
+- AWS Lambda  
+- API Gateway  
+
+**AI & Processing:**  
+- AWS Rekognition  
+- OpenAI API  
+
+---
 
 ## Key Features
 
-- User authentication using AWS Cognito
-- Image upload and storage with AWS S3
-- Digital wardrobe metadata stored in DynamoDB
-- Serverless backend using AWS Lambda
-- API communication via API Gateway
-- Clothing detection using AWS Rekognition
-- AI-generated outfit recommendations using OpenAI APIs
+- Secure user authentication via AWS Cognito  
+- Image upload and storage using AWS S3  
+- Digital wardrobe management with DynamoDB  
+- Serverless backend powered by AWS Lambda  
+- RESTful API communication via API Gateway  
+- Clothing detection using AWS Rekognition  
+- AI-generated outfit recommendations using OpenAI APIs  
+
+---
 
 ## Architecture Overview
 
+### Data Flow (Simplified)
+
+Frontend (React) → API Gateway → AWS Lambda → (S3 for image storage, DynamoDB for structured data)
+
 The application follows a serverless architecture:
 
-1. Users interact with the React frontend.
-2. Requests are sent through API Gateway.
-3. AWS Lambda functions process backend logic.
-4. User-uploaded images are stored in AWS S3.
-5. Structured wardrobe data and AI-generated outputs are stored in DynamoDB.
-6. AWS Rekognition can be used to analyze clothing images.
-7. OpenAI APIs are used for generating outfit recommendations.
+1. Users interact with the React frontend  
+2. Requests are routed through API Gateway  
+3. AWS Lambda handles backend processing  
+4. Clothing images are stored in AWS S3  
+5. Structured wardrobe data and AI outputs are stored in DynamoDB  
+6. AWS Rekognition analyzes clothing attributes  
+7. OpenAI APIs generate outfit recommendations  
 
-AWS Amplify is used to deploy the application and connect the frontend to AWS services.
+AWS Amplify is used to deploy the frontend and connect it with backend services.
+
+---
 
 ## Deployment Note
 
-This project was originally deployed using AWS services during a hackathon environment.
+This project was deployed using AWS services during a hackathon environment.
 
-The cloud resources are not currently active due to limited AWS access after the event. This repository is maintained as a portfolio project to demonstrate system design, architecture, and AWS integration.
+Cloud resources are not currently active due to limited AWS access after the event. This repository is maintained as a portfolio project to demonstrate system architecture, AWS integration, and backend design.
 
 The project can be redeployed by reconfiguring AWS services and environment variables.
 
+---
+
 ## Personal Version Note
 
-This project was originally developed as part of a team during an AWS hackathon.
+Originally developed as part of a team during an AWS hackathon, this repository represents my personal portfolio version of the project.
 
-This repository represents my personal version for portfolio use, highlighting my contributions to backend infrastructure, cloud integration, and system design.
+It highlights my contributions to backend infrastructure, cloud integration, and system-level design.
+
+---
 
 ## Project Links
 
-- Original Repository: [Add team repo link]
-- Demo Video: [Add link if available]
-- Devpost: [Add link if available]
+- Original Repository: https://github.com/EricDeanRoss808/wardrobe-app  
+- Demo Video: https://youtu.be/pnm0jRh5hFI?si=ZM79SS-bcES7QvNR  
+- Devpost: https://devpost.com/software/drip-management  
