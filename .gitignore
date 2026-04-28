@@ -19,3 +19,9 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
+
+# System files
+.DS_Store
+
+# VS Code
+.vscode/
